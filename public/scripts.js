@@ -3,7 +3,7 @@ const appendData = (object) => {
   $('.response-list')
     .append(
       `<li class='response-item'>
-        <p>Your request was made to route: ${path} on ${time.split('T')[0]} at ${time.slice(11,16)} and the response took ${duration}ms.</p>
+        <p>Your request was made to route: ${path} from ${host} on ${time.split('T')[0]} at ${time.slice(11,16)} and the response took ${duration}ms.</p>
       </li>`
     );
 }
