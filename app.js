@@ -20,11 +20,7 @@ influx.getMeasurements()
       console.log(`Listening on ${app.get('port')}.`);
     });
   })
-  .catch(error => console.log({ error }))
-
-app.get('/', (request, response) => {
-  response.send('Hello world!');
-});
+  .catch(error => console.log({ error }));
 
 app.get('/api/v1/usage', (request, response) => {
   influx.query(`
