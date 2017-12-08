@@ -6,7 +6,8 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
-    "influx": "^5.0.0-alpha.4"
+    "influx": "^5.0.0-alpha.4",
+    "plotly.js": "^1.31.2"
   },
   "devDependencies": {},
   "scripts": {

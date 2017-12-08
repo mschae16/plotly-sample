@@ -35,26 +35,11 @@ main {
   align-items: center;
 }
 
-.response-title {
+.graphs-title {
   margin: 30px auto;
 }
 
-.response-list {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  list-style-type: none;
-}
-
-.response-item {
-  height: 60px;
-  width: 100%;
-  background: #ccc;
-  color: #666;
-  font-size: 18px;
-  line-height: 60px;
-  text-align: center;
+#graphs-container {
+  height: 60%;
+  width: 80%;
 }

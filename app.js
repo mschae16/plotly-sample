@@ -38,4 +38,4 @@ app.get('/api/v1/usage', (request, response) => {
     `)
     .then(result => response.status(200).json(result))
     .catch(error => response.status(500).json({ error }));
-})
+});
