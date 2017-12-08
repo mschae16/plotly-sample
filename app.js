@@ -5,22 +5,7 @@ const os = require('os');
 const bodyParser = require('body-parser');
 const app = express();
 
-const influx = new Influx.InfluxDB({
-  host: 'localhost',
-  database: 'express_sample_db',
-  schema: [
-    {
-      measurement: 'response_times',
-      fields: {
-        path: Influx.FieldType.STRING,
-        duration: Influx.FieldType.INTEGER,
-      },
-      tags: [
-        'host'
-      ]
-    }
-  ]
-});
+const influx = new Influx.InfluxDB('http://127.0.0.1:8086/telegraf');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -29,12 +14,8 @@ app.use(bodyParser.urlencoded({
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('port', 3000);
 
-influx.getDatabaseNames()
-  .then(names => {
-    if (!names.includes('express_sample_db')) {
-      return influx.createDatabase('express_sample_db');
-    }
-  })
+influx.getMeasurements()
+  .then(names => console.log('My measurement names are: ' + names.join(', ')))
   .then(() => {
     app.listen(app.get('port'), () => {
       console.log(`Listening on ${app.get('port')}.`);
@@ -42,38 +23,19 @@ influx.getDatabaseNames()
   })
   .catch(error => console.log({ error }))
 
-
-app.use((request, response, next) => {
-  const startTime = Date.now();
-
-  response.on('finish', () => {
-    const duration = Date.now() - startTime
-    console.log(`Request to ${request.path} took ${duration}ms`);
-
-    influx.writePoints([
-      {
-        measurement: 'response_times',
-        tags: { host: os.hostname() },
-        fields: { duration, path: request.path },
-      }
-    ]).catch(error => {
-      console.error(`Error saving data to InfluxDB! ${err.stack}`)
-    });
-  });
-  return next();
-});
-
 app.get('/', (request, response) => {
   response.send('Hello world!');
 });
 
-app.get('/api/v1/responses', (request, response) => {
+app.get('/api/v1/usage', (request, response) => {
   influx.query(`
-    select * from response_times
-    where host = ${Influx.escape.stringLit(os.hostname())}
+    select mean("usage_user") as "mean_usage_user" from cpu
+    where time > now() - 1h and
+    host = ${Influx.escape.stringLit(os.hostname())}
+    group by time(10s)
     order by time desc
-    limit 10
-  `)
-  .then(result => response.status(200).json(result))
-  .catch(error => response.status(500).json({ error }));
-});
+    limit 20
+    `)
+    .then(result => response.status(200).json(result))
+    .catch(error => response.status(500).json({ error }));
+})
